@@ -1,5 +1,5 @@
 import pytest
-
+import torch
 from torchrl.runners.gym_runner import GymRunner
 from torchrl.agents.gym_random_agent import GymRandomAgent
 from torchrl.utils import get_gym_spaces
@@ -13,7 +13,7 @@ from torchrl.utils import get_gym_spaces
     'Pendulum-v0',
 ])
 def test_gym_runner(env_id: str):
-  runner = GymRunner(env_id)
+  runner = GymRunner(env_id, device=torch.device('cpu'))
   agent = GymRandomAgent(*get_gym_spaces(runner.make_env))
   runner.rollout(agent)
   runner.close()

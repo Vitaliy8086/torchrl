@@ -39,9 +39,7 @@ class BaseA2CAgent(BaseAgent):
     self.ac_net.load_state_dict(cp['ac_net'])
 
   def act(self, obs):
-    obs_tensor = self.obs_to_tensor(obs)
-
-    _, dist = self.ac_net(obs_tensor)
+    _, dist = self.ac_net(obs)
     action = dist.sample()
     return action.unsqueeze(1).cpu().numpy()
 

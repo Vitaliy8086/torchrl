@@ -16,7 +16,8 @@ class GymProblem(Problem):
   and not really an ideal spec.
   """
   def make_runner(self, n_envs=1, seed=None) -> BaseRunner:
-    return GymRunner(self.env_id, n_envs=n_envs, seed=seed)
+    return GymRunner(self.env_id, n_envs=n_envs,
+                     seed=seed, device=self.device)
 
   def eval(self, epoch):
     """

@@ -1,5 +1,7 @@
 import time
 import gym
+import torch
+import numpy as np
 
 from .base_runner import BaseRunner
 from ..agents import BaseAgent
@@ -17,9 +19,10 @@ class GymRunner(BaseRunner):
   rollout.
   """
   def __init__(self, env_id: str, seed: int = None,
-               n_envs: int = 1):
+               n_envs: int = 1, device: torch.device = None):
     super(GymRunner, self).__init__()
 
+    self.device = device
     self.n_envs = n_envs
     self.env_id = env_id
     self.envs = MultiGymEnvs(self.make_env, n_envs=n_envs, base_seed=seed)
@@ -38,8 +41,18 @@ class GymRunner(BaseRunner):
       for env_id, obs in zip(batch_reset_ids, new_obs):
         self.obs[env_id] = obs
 
+  def obs_to_tensor(self, obs_list: list) -> torch.Tensor:
+    with torch.no_grad():
+      batch_obs_tensor = torch.from_numpy(
+          np.array(obs_list)
+      ).float()
+      batch_obs_tensor.to(self.device)
+
+    return batch_obs_tensor
+
   def compute_action(self, agent: BaseAgent, obs_list: list):
     """Compute Actions from the agent."""
+    obs_list = self.obs_to_tensor(obs_list)
     return agent.act(obs_list)
 
   def process_transition(self, history,

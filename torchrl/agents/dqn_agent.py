@@ -51,9 +51,7 @@ class BaseDQNAgent(BaseAgent):
     self.eps = cp['eps']
 
   def act(self, obs):
-    obs_tensor = self.obs_to_tensor(obs)
-
-    actions = self.q_net(obs_tensor)
+    actions = self.q_net(obs)
     actions = actions.max(dim=1)[1].cpu().numpy()
     actions = epsilon_greedy(self.action_space.n, actions, self.eps.value)
     return actions
